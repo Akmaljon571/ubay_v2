@@ -29,34 +29,20 @@ export const productCreateJSON = async (req, res) => {
 export const updateImages = async (req, res) => {
     try {
         const extractDir = path.join(process.cwd(), 'src', 'uploads')
-        if (!fs.existsSync(extractDir)) {
-            zipParserAndCreateImages()
-        } else {
-            const func = (directory) => {
-                fs.readdirSync(directory).forEach(file => {
-                    const curPath = path.join(directory, file);
-                    if (fs.lstatSync(curPath).isDirectory()) func(curPath);
-                    else fs.unlinkSync(curPath);
-                });
-            }
-            func(extractDir)
-            fs.rmdirSync(extractDir)
-            zipParserAndCreateImages()
-        }
 
-        function zipParserAndCreateImages() {
+        if (!fs.existsSync(extractDir)) {
             fs.mkdirSync(extractDir)
-            const zipBuffer = req.file.buffer;
-            const zip = new AdmZip(zipBuffer);
-            const zipEntries = zip.getEntries();
-            zipEntries.forEach((zipEntry) => {
-                if (!zipEntry.isDirectory && /\.(jpg|jpeg|png|gif)$/i.test(zipEntry.entryName)) {
-                    const entryFileName = path.basename(zipEntry.entryName);
-                    const entryFilePath = path.join(extractDir, entryFileName);
-                    fs.writeFileSync(entryFilePath, zipEntry.getData());
-                }
-            })
         }
+        const zipBuffer = req.file.buffer;
+        const zip = new AdmZip(zipBuffer);
+        const zipEntries = zip.getEntries();
+        zipEntries.forEach((zipEntry) => {
+            if (!zipEntry.isDirectory && /\.(jpg|jpeg|png|gif)$/i.test(zipEntry.entryName)) {
+                const entryFileName = path.basename(zipEntry.entryName);
+                const entryFilePath = path.join(extractDir, entryFileName);
+                fs.writeFileSync(entryFilePath, zipEntry.getData());
+            }
+        })
 
         response({ res, msg: "Updated Images", status: 200 })
     } catch (error) {
@@ -84,11 +70,11 @@ export const getListWithCategory = async (req, res) => {
         const all = await Product.find()
         const result = {}
         for (const data of all) {
-            const value = {...data._doc}
-            if(value.residual < 3) value.status = false
+            const value = { ...data._doc }
+            if (value.residual < 3) value.status = false
             else value.status = true
 
-            if(result[value.category_rout])result[value.category_rout].push(value)
+            if (result[value.category_rout]) result[value.category_rout].push(value)
             else result[value.category_rout] = [value]
         }
 
