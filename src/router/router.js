@@ -7,4 +7,4 @@ import orderRouter from "./order.router.js";
 export default Router()
     .use('/client', clientRouter)
     .use('/product/:admin_id', adminCheck, productRouter)
-    .use('/order/:admin_id', adminCheck, orderRouter)
+    .use('/order/', orderRouter)
