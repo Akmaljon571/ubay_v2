@@ -38,6 +38,17 @@ export const orderUpdate = async (req, res) => {
     }
 }
 
+export const orderRemove = async(req, res) => {
+    try {
+        const { id } = req.params
+        await Order.deleteOne({ _id: id });
+
+        response({ res, msg: "Deleted", status: 204 })
+    } catch (error) {
+        response({ res, msg: error.message, status: 400, error: true })
+    }
+}
+
 export const orderClear = async(req, res) => {
     try {
         const { user_id } = req.params
